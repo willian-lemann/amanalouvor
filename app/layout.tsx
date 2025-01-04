@@ -7,6 +7,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
+import Image from "next/image";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -42,31 +43,26 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
+                    <div className="relative aspect-square  w-12">
+                      <Image
+                        alt="imagem da igreja amana"
+                        fill
+                        className="object-cover"
+                        src="https://static.wixstatic.com/media/088db6_5929115330a946a984f712ded85fb4e3~mv2.png/v1/fill/w_222,h_180,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/logo%20branca_edited.png"
+                      />
                     </div>
+                    <Link href={"/"}>Amana Louvor</Link>
                   </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                  {/* {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />} */}
                 </div>
               </nav>
-              <div className="flex flex-col gap-20 max-w-5xl p-5">
+
+              <div className="flex flex-col gap-20 max-w-5xl w-full p-0">
                 {children}
               </div>
 
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                <p>
-                  Powered by{" "}
-                  <a
-                    href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                    target="_blank"
-                    className="font-bold hover:underline"
-                    rel="noreferrer"
-                  >
-                    Supabase
-                  </a>
-                </p>
-                <ThemeSwitcher />
+              <footer className="w-full flex items-center justify-center mx-auto text-center text-xs gap-8 py-16">
+                {/* <ThemeSwitcher /> */}
               </footer>
             </div>
           </main>
