@@ -24,9 +24,7 @@ export async function ChordSheetGrid() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {data.map((sheet) => (
-          <>
-            <ChordSheetItem key={sheet.id} sheet={sheet} />
-          </>
+          <ChordSheetItem key={sheet.id} sheet={sheet} />
         ))}
       </div>
     </div>

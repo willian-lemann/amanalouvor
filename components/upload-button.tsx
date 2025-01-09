@@ -4,13 +4,15 @@ import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { uploadFile } from "@/actions/file-actions";
-import { startTransition, useActionState } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 
 export function UploadButton() {
   const [state, action, isPending] = useActionState(uploadFile, {
     error: "",
     success: true,
   });
+
+  console.log(state);
 
   const handleUpload = () => {
     // Here you would implement the upload functionality
@@ -28,6 +30,34 @@ export function UploadButton() {
     };
     input.click();
   };
+
+  useEffect(() => {
+    async function handlePaste(event: ClipboardEvent) {
+      const items = event.clipboardData?.items;
+
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+
+          if (item.kind === "file" && item.type.startsWith("image/")) {
+            const file = item.getAsFile();
+
+            if (file) {
+              startTransition(async () => {
+                action(file);
+              });
+            }
+          }
+        }
+      }
+    }
+
+    document.addEventListener("paste", handlePaste);
+
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, []);
 
   return (
     <Button

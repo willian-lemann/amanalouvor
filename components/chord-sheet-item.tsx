@@ -10,18 +10,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { startTransition, useActionState, useRef, useState } from "react";
+import {
+  KeyboardEvent,
+  startTransition,
+  useActionState,
+  useRef,
+  useState,
+} from "react";
 import { Input } from "./ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { revalidatePath } from "next/cache";
-import { deleteFile } from "@/actions/file-actions";
+import { deleteFile, updateName } from "@/actions/file-actions";
+import { Label } from "./ui/label";
 
 type ChordSheetItemProps = {
-  sheet: { id: string; url: string; name: string };
+  sheet: { id: number; url: string; name: string };
 };
 
 export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
-  const [state, action, isPending] = useActionState(deleteFile, {
+  const [deleteState, deleteAction] = useActionState(deleteFile, {
+    error: "",
+    success: true,
+  });
+
+  const [updateNameState, updateNameAction] = useActionState(updateName, {
     error: "",
     success: true,
   });
@@ -32,28 +44,53 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
   function handleRename() {
     setIsEditing(true);
     setTimeout(() => {
-      inputRef.current?.focus();
-    }, 200);
+      if (inputRef.current) {
+        inputRef.current?.focus();
+      }
+    }, 100);
   }
 
-  async function handleBlur() {
+  function handleUpdateName() {
+    startTransition(async () => {
+      const newName = inputRef.current?.value!;
+
+      if (newName) {
+        updateNameAction({ id: sheet.id, newName });
+      }
+    });
+  }
+
+  async function handleUpdateNameOnBlur() {
+    if (inputRef.current?.value.length === 0) return setIsEditing(false);
+
     setIsEditing(false);
+    handleUpdateName();
+  }
 
-    const { error } = await createClient()
-      .from("musicas")
-      .update({ name: inputRef.current?.value })
-      .eq("id", sheet.id);
-
-    if (error) {
-      setIsEditing(true);
-      alert("Error ao atualizar o nome da música");
+  async function handleUpdateNameOnEnter(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      if (inputRef.current?.value.length === 0) return setIsEditing(false);
+      setIsEditing(false);
+      handleUpdateName();
     }
   }
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: number) {
     startTransition(async () => {
-      action(id);
+      deleteAction(id);
     });
+  }
+
+  async function copyImageToClipboard() {
+    try {
+      const response = await fetch(sheet.url);
+      const blob = await response.blob();
+      const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([clipboardItem]);
+      alert("Image copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy image:", error);
+    }
   }
 
   return (
@@ -67,10 +104,15 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
             <Input
               ref={inputRef}
               placeholder="Editar o nome.."
-              onBlur={handleBlur}
+              onFocus={(e) => (e.target.value = sheet.name)}
+              onBlur={handleUpdateNameOnBlur}
+              onKeyDown={handleUpdateNameOnEnter}
+              className="py-0 min-h-0 h-6"
             />
           ) : (
-            sheet.name
+            <Label className="cursor-pointer" onClick={handleRename}>
+              {sheet.name}
+            </Label>
           )}
         </CardTitle>
         <DropdownMenu>
@@ -82,7 +124,9 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem>Abrir</DropdownMenuItem>
             <DropdownMenuItem onClick={handleRename}>Renomear</DropdownMenuItem>
-            <DropdownMenuItem>Compartilhar</DropdownMenuItem>
+            <DropdownMenuItem onClick={copyImageToClipboard}>
+              Copiar
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleDelete(sheet.id)}
               className="text-red-600"
