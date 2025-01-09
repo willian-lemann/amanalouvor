@@ -62,7 +62,7 @@ export function UploadButton() {
   return (
     <Button
       onClick={handleUpload}
-      className="gap-4 shadow-lg bg-primary hover:bg-primary/90 min-w-40"
+      className="gap-4 fixed md:relative z-50 p-3 md:p-2 bottom-3 md:bottom-0 right-3 md:right-0 shadow-lg bg-primary hover:bg-primary/90 md:min-w-40 rounded-full md:rounded-md w-12 h-12 md:h-auto md:w-auto"
     >
       {isPending ? (
         <div role="status">
@@ -87,7 +87,7 @@ export function UploadButton() {
       ) : (
         <Upload className="h-6 w-6" />
       )}
-      <span className="">Adicionar</span>
+      <span className="hidden md:block">Adicionar</span>
     </Button>
   );
 }

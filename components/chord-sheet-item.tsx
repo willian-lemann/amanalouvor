@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, XIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +22,20 @@ import { createClient } from "@/utils/supabase/client";
 import { revalidatePath } from "next/cache";
 import { deleteFile, updateName } from "@/actions/file-actions";
 import { Label } from "./ui/label";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "./ui/context-menu";
 
 type ChordSheetItemProps = {
   sheet: { id: number; url: string; name: string };
@@ -96,7 +110,7 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
   return (
     <Card
       key={sheet.id}
-      className="overflow-hidden w-auto hover:shadow-lg transition-shadow border-border bg-card"
+      className="overflow-hidden  w-auto mx-4 md:mx-0 hover:shadow-lg transition-shadow border-border bg-card"
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2">
         <CardTitle className="text-sm font-medium">
@@ -137,13 +151,51 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
         </DropdownMenu>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="relative w-[240px] h-[200px] bg-muted/20">
-          <Image
-            src={sheet.url}
-            alt={`Preview of ${sheet.name}`}
-            fill
-            className="object-cover"
-          />
+        <div className="relative md:w-[240px] h-[200px] bg-muted/20">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Image
+                src={sheet.url}
+                alt={`Preview of ${sheet.name}`}
+                fill
+                className="object-cover cursor-pointer"
+              />
+            </DialogTrigger>
+
+            <DialogContent className="h-full bg-white outline-none shadow-none border-none">
+              <DialogTitle hidden />
+              <DialogClose className="bg-white rounded h-fit w-fit  z-50 ml-auto">
+                <XIcon className="bg-black" />
+              </DialogClose>
+
+              {/* <ContextMenu>
+                <ContextMenuTrigger  className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed z-50 text-sm">
+                  Right click here
+                </ContextMenuTrigger>
+                <ContextMenuContent className="w-64">
+                  <ContextMenuItem inset>
+                    Back
+                    <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem inset disabled>
+                    Forward
+                    <ContextMenuShortcut>⌘]</ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem inset>
+                    Reload
+                    <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu> */}
+
+              <Image
+                src={sheet.url}
+                alt={`Preview of ${sheet.name}`}
+                fill
+                className="object-contain cursor-pointer"
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </CardContent>
     </Card>

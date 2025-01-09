@@ -4,6 +4,40 @@ import { randomUUID } from "node:crypto";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 
+const pageSize = 12;
+
+export type GetChordsParams = {
+  page: number;
+  query: string;
+};
+
+export const getChords = async (searchParams: GetChordsParams) => {
+  const { page = 1, query = "" } = searchParams;
+  const offset = (+page - 1) * pageSize;
+
+  const client = await createClient();
+
+  let queryRaw = client
+    .from("musicas")
+    .select("*", { count: "exact" })
+    .range(offset, offset + pageSize - 1)
+    .order("created_at", { ascending: false });
+
+  if (query) {
+    queryRaw = queryRaw.textSearch("name", query, {
+      type: "websearch",
+    });
+  }
+
+  const response = await queryRaw;
+
+  return {
+    count: response.count,
+    data: response.data,
+    error: response.error,
+  };
+};
+
 export async function uploadFile(prevstate: any, file: File) {
   const client = await createClient();
 
