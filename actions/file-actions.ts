@@ -20,7 +20,7 @@ export const getChords = async (searchParams: GetChordsParams) => {
   let queryRaw = client
     .from("musicas")
     .select("*", { count: "exact" })
-    .range(offset, offset + pageSize - 1)
+    // .range(offset, offset + pageSize - 1)
     .order("created_at", { ascending: false });
 
   if (query) {
