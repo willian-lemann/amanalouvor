@@ -57,7 +57,7 @@ export function UploadButton() {
     };
   }, []);
 
-  if (!isPending) {
+  if (isPending) {
     if (typeof window !== "undefined") {
       document.body.style.overflow = "hidden";
     }
