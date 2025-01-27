@@ -5,6 +5,7 @@ import "./globals.css";
 import Image from "next/image";
 
 import { Toaster } from "@/components/ui/toaster";
+import { HeaderAuth } from "@/components/header-auth";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -31,7 +32,7 @@ export default function RootLayout({
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
@@ -50,7 +51,7 @@ export default function RootLayout({
                     </div>
                     <Link href={"/"}>Amana Louvor</Link>
                   </div>
-                  {/* {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />} */}
+                  <HeaderAuth />
                 </div>
               </nav>
 
