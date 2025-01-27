@@ -50,7 +50,7 @@ export async function HeaderAuth() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      Olá, {user.email}!
+      <span className="hidden md:block"> Olá, {user.email}!</span>
       <form action={signOutAction}>
         <Button type="submit" variant={"outline"}>
           Sair
