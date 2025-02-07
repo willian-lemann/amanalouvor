@@ -36,12 +36,15 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "./ui/context-menu";
+import { useToast } from "@/hooks/use-toast";
 
 type ChordSheetItemProps = {
   sheet: { id: number; url: string; name: string };
 };
 
 export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
+  const { toast } = useToast();
+  const [isChordOpen, setIsChordOpen] = useState(false);
   const [deleteState, deleteAction] = useActionState(deleteFile, {
     error: "",
     success: true,
@@ -101,7 +104,7 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
       const blob = await response.blob();
       const clipboardItem = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([clipboardItem]);
-      alert("Image copied to clipboard!");
+      toast({ title: "Imagem copiada para o clipboard" });
     } catch (error) {
       console.error("Failed to copy image:", error);
     }
@@ -136,7 +139,9 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Abrir</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsChordOpen(true)}>
+              Abrir
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleRename}>Renomear</DropdownMenuItem>
             <DropdownMenuItem onClick={copyImageToClipboard}>
               Copiar
@@ -152,7 +157,7 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="relative md:w-[240px] h-[200px] bg-muted/20">
-          <Dialog>
+          <Dialog open={isChordOpen} onOpenChange={setIsChordOpen}>
             <DialogTrigger asChild>
               <Image
                 src={sheet.url}
@@ -167,26 +172,6 @@ export function ChordSheetItem({ sheet }: ChordSheetItemProps) {
               <DialogClose className="bg-white rounded h-fit w-fit  z-50 ml-auto">
                 <XIcon className="bg-black" />
               </DialogClose>
-
-              {/* <ContextMenu>
-                <ContextMenuTrigger  className="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed z-50 text-sm">
-                  Right click here
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-64">
-                  <ContextMenuItem inset>
-                    Back
-                    <ContextMenuShortcut>⌘[</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem inset disabled>
-                    Forward
-                    <ContextMenuShortcut>⌘]</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem inset>
-                    Reload
-                    <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu> */}
 
               <Image
                 src={sheet.url}
