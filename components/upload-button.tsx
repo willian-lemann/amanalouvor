@@ -73,6 +73,10 @@ export function UploadButton() {
     );
   }
 
+  if (typeof window !== "undefined") {
+    document.body.style.overflow = "auto";
+  }
+
   return (
     <Button
       onClick={handleUpload}
